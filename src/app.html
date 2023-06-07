@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<style>
+	body {
+		--link: hsla(266, 85%, 65%, 0.687);
+		--link-hover: hsla(266, 100%, 75%, 0.687);
+		--background-main: hsl(280, 7%, 16%);
+		--background-nav: hsl(282, 13%, 19%);
+		background-color: var(--background-main);
+	}
+    aside {
+		background-color: var(--background-nav);
+		padding-top: 2rem;
+        height:100%;
+		min-width: 5rem;
+        width:5rem;
+		overflow-x: hidden;
+		z-index: 1;
+        top:0;
+        left:0;
+    }
+	aside nav {
+		display:flex;
+		flex-direction: column;
+		width:100%;
+	}
+	aside nav a {
+		margin:auto;
+		text-decoration: none;
+		margin-bottom: 1.5rem;
+		color:var(--link);
+	}
+	aside nav a:visited {
+		color:var(--link);
+	}
+	aside nav a:hover {
+		color:var(--link-hover);
+	}
+	aside nav a .mi{
+		font-size: 2rem;
+	}
+	h1 {
+		color: hsla(266, 60%, 78%, 0.687);
+	}
+	.mi {
+		font-size: 1.4rem;
+	}
+	.u-sr-only {
+		position: absolute;
+    	left: -10000px;
+    	top: auto;
+    	width:1px;
+    	height:1px;
+    	overflow:hidden;
+	}
+</style> 
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="stylesheet" href="https://unpkg.com/mono-icons@1.0.5/iconfont/icons.css" >
+		<meta name="viewport" content="width=device-width" />
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
