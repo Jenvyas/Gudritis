@@ -175,6 +175,15 @@ export const POST: RequestHandler = async (event) => {
             case 'register':
                 authenticationResult = await authenticateRegister(body);
                 break;
+            case 'logout':
+                if (event.locals.loginSession) {
+                    await sessions?.deleteMany({ userId: event.locals.loginSession._id });
+                }
+                return json({ message: 'Logout successful.' }, {
+					headers: {
+						'Set-Cookie': `session=; Path=/; SameSite=Lax; HttpOnly; Expires=${new Date().toUTCString()}`
+					}
+				})
         }
     } catch (err) {
         if (err instanceof Error) {

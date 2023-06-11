@@ -9,7 +9,7 @@
 
     beforeNavigate( () => {
 		let expirationDate = $loginSession?.sessionExpiration;
-
+        
 		if (expirationDate && expirationDate < new Date()) {
 			console.log('Login session expired.');
 			$loginSession = null;
