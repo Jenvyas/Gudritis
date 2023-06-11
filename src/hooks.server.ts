@@ -34,10 +34,14 @@ export async function connectToDatabase() {
 export const db = await connectToDatabase();
 
 async function attachUserToRequestEvent(sessionId: string, event: RequestEvent) {
-    const session = await collections.sessions?.findOne({sessionId});
+    const session = await collections.sessions?.findOne({_id: sessionId});
+    
     if (session) {
         const user = await collections.users?.findOne({_id: session.userId});
-        event.locals.user = user;
+        
+        if (user) {
+            event.locals.loginSession = {...user, sessionExpiration: session.expirationDate};
+        }
     }
 }
 
@@ -49,10 +53,11 @@ export const handle: Handle = async ({event, resolve}) => {
         await attachUserToRequestEvent(sessionId, event);
     }
 
-    if (!event.locals.user) {
+    if (!event.locals.loginSession) {
         cookies.delete('session');
     }
 
     const response = await resolve(event);
+
     return response;
 }

@@ -1,17 +1,10 @@
+import type { LoginSession } from '$lib/models/session';
 import type { LayoutServerLoad } from './$types';
-import { db } from '../hooks.server';
-import { checkSession } from '$lib/session';
 
-export const load = (async ({ cookies }) => {
-    let sessionId = cookies.get('sessionId');
-    let userId = cookies.get('userId');
-    if (sessionId === undefined || userId === undefined) {
-        return;
-    }
-    
-    if (await checkSession(sessionId, userId)) {
-        
-    } else {
-
+export const load = (async ({ locals }) => {
+    const { loginSession } = locals;
+    const loginSessionData: LoginSession | null | undefined = loginSession;
+    return {
+        loginSessionData,
     }
 }) satisfies LayoutServerLoad

@@ -1,3 +1,7 @@
+import { collections } from "../../hooks.server";
+
+export const gameTemplates = collections.gameTemplates;
+
 interface Answer {
     index: number;
     text: string;
