@@ -2,7 +2,7 @@ import { collections } from "../../hooks.server";
 
 export const gameTemplates = collections.gameTemplates;
 
-interface Answer {
+export interface Answer {
     index: number;
     text: string;
 }
@@ -22,4 +22,5 @@ export interface GameTemplate {
     tags: string;
     slides: Array<Slide>;
     author: string;
+    author_id: string;
 }

@@ -5,7 +5,14 @@
 		--link-hover: hsla(266, 100%, 75%, 0.687);
 		--background-main: hsl(280, 7%, 16%);
 		--background-nav: hsl(282, 13%, 19%);
+		--slide-panel: hsl(281, 15%, 24%);
+		--slide-answer-panel: hsl(283, 19%, 32%);
+		--slide-text: rgb(212, 195, 212);
+		--slide-darker-text: rgb(145, 133, 145);
+		--slide-answer-darker-text: rgb(176, 158, 176);
+		--slide-answer-text: rgb(233, 220, 231);
 		background-color: var(--background-main);
+		font-family: 'Ubuntu', sans-serif;
 	}
     aside {
 		background-color: var(--background-nav);
@@ -59,6 +66,9 @@
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<link rel="stylesheet" href="https://unpkg.com/mono-icons@1.0.5/iconfont/icons.css" >
 		<meta name="viewport" content="width=device-width" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
