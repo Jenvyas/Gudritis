@@ -8,7 +8,6 @@ export interface Answer {
 }
 
 export interface Slide {
-    index: number;
     duration: number;
     text?: string;
     image?: string; 

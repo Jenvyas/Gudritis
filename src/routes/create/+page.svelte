@@ -5,6 +5,7 @@
     import { get } from "svelte/store";
     import type { LoginSession } from "$lib/models/session";
     import { error } from "@sveltejs/kit";
+    import ChoosingEditingSlide from "$lib/components/Game/Editing/ChoosingEditingSlide.svelte";
 
     const user: LoginSession = get(loginSession);
 
@@ -17,7 +18,6 @@
         tags: "",
         slides: [
             {
-                index: 0,
                 duration: 10,
                 text: "",
                 isMultipleAnswer: false,
@@ -37,6 +37,9 @@
         author: user.nickname,
         author_id: user._id,
     };
+
+    console.log(template.slides.length);
+    
 
     let activeSlideIndex: number = 0;
 
@@ -63,6 +66,8 @@
         list-style: none;
     }
     menu li{
+        display:flex;
+        justify-content: space-between;
         background-color: var(--background-nav);
         border-radius: 5px;
         border: 1px solid;
@@ -71,34 +76,82 @@
         margin: 0.5rem;
     }
     .menu-option {
-        font-size: 1.25rem;
+        font-size: 1rem;
     }
     menu li input[type="checkbox"] {
         height:1.25rem;
         width:1.25rem;
+        accent-color: var(--slide-answer-panel);
     }
     .duration {
         color:var(--slide-text);
-        background-color: transparent;
+        background-color: var(--slide-answer-panel);
         border: 1px solid;
-        border-color: var(--slide-answer-panel);
-        font-size: 1.25rem;
+        border-color: var(--background-nav);
+        font-size: 1rem;
         width:3rem;
         text-align: center;
     }
+    .duration:focus {
+        outline-color: whitesmoke;
+        outline-style: solid;
+        outline-width: 1px;
+    }
     article {
-        padding: 3rem;
-        padding-right: 5rem;
-        padding-left: 5rem;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
         width:100%;
     }
+    .slide-change-button  {
+        width:5rem;
+        padding:0;
+        background-color: transparent;
+        border:none;
+        color:gray;
+    }
+    .slide-change-button[disabled] {
+        color:black;
+    }
+    .slide-change-button[disabled]:hover {
+        color: black;
+        cursor: auto;
+    }
+    .slide-change-button:hover  {
+        color:whitesmoke;
+        cursor: pointer;
+    }
+    .slide-change-button .mi {
+        font-size: 3rem;
+    }
+
 </style>
 
 <div class="editing-panel">
+    <button class="slide-change-button" disabled={activeSlideIndex < 0} on:click={e=>{
+        activeSlideIndex--;
+    }}>
+        <i class="mi mi-chevron-left"><span class="u-sr-only">Go left slide</span></i>
+    </button>
+
+    
     <article>
+        {#if activeSlideIndex < template.slides.length && activeSlideIndex >= 0}
         <EditingSlide bind:slide={template.slides[activeSlideIndex]} />
+        {:else} 
+        <ChoosingEditingSlide bind:slides={template.slides} bind:index={activeSlideIndex}/>
+        {/if}
     </article>
+    
+
+    <button class="slide-change-button" disabled={activeSlideIndex >= template.slides.length} on:click={e=>{
+            activeSlideIndex++;
+        }}>
+        <i class="mi mi-chevron-right"><span class="u-sr-only">Go right slide</span></i>
+    </button>
+
+
     <menu>
+        {#if activeSlideIndex < template.slides.length && activeSlideIndex >= 0}
         <li>
             <span class="menu-option">Multiple answers:</span><input
                 type="checkbox"
@@ -136,6 +189,7 @@
                 required
             />
         </li>
+        {/if}
     </menu>
 </div>
 

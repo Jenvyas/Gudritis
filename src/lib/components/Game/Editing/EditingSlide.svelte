@@ -12,16 +12,27 @@
         height: 100%;
         display:flex;
         flex-direction: column;
+        background-color: var(--background-nav);
+        border-radius: 10px;
+    } 
+    .container {
+        flex:1;
+    }
+    .padding {
+        padding: 0.5rem;
     }
     .answer-wrapper {
         flex:1;
         width:100%;
+        height:100%;
         display:flex;
         flex-wrap: wrap;
     }
+    .answer-wrapper .container {
+        flex:1 0 40%
+    }
     .question-wrapper {
-        flex:1;
-        margin: 0.5rem;
+        height:100%;
         border-radius: 10px;
         background-color: var(--slide-panel);
         display:flex;
@@ -29,6 +40,7 @@
         align-items: center;
     }
     .question-text {
+        border-radius: 5px;
         color:var(--slide-text);
         text-align: center;
         vertical-align: middle;
@@ -41,8 +53,12 @@
         word-wrap: break-word;
         overflow:hidden;
     }
+    .question-text:hover {
+        outline-color: var(--slide-darker-text);
+        outline-style: solid;
+        outline-width: 1px;
+    }
     .question-text:focus {
-        border-radius: 5px;
         outline-color: whitesmoke;
         outline-style: solid;
         outline-width: 1px;
@@ -60,19 +76,26 @@
 </style>
 
 <section>
-    <div class="question-wrapper">
-        <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty}></div>
+    <div class="container padding">
+        <div class="question-wrapper">
+            <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty}></div>
+        </div>
     </div>
-    <div class="answer-wrapper">
-        {#each slide.answers as answer}
-            <EditingAnswer
-                index={answer.index}
-                bind:text={answer.text}
-                isMultipleAnswer={slide.isMultipleAnswer}
-                bind:correctAnswer={slide.correctAnswer}
-            />
-        {/each}
+    <div class="container">
+        <div class="answer-wrapper">
+            {#each slide.answers as answer}
+            <div class="container padding">
+                <EditingAnswer
+                    index={answer.index}
+                    bind:text={answer.text}
+                    isMultipleAnswer={slide.isMultipleAnswer}
+                    bind:correctAnswer={slide.correctAnswer}
+                />
+            </div>
+            {/each}
+        </div>
     </div>
+    
 </section>
 
 

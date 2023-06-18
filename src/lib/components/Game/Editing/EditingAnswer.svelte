@@ -1,7 +1,6 @@
 <style>
     .answer {
         background-color:var(--slide-answer-panel);
-        margin:0.5rem;
         flex:1;
         min-height: 100%;
         height:100%;
@@ -14,7 +13,18 @@
     .correct {
         background-color: rgb(77, 139, 87);
     }
+    .answer.correct .answer-text-input:hover {
+        outline-color: rgb(163, 230, 174);
+        outline-style: solid;
+        outline-width: 1px;
+    }
+    .answer.correct .answer-text-input:focus {
+        outline-color: whitesmoke;
+        outline-style: solid;
+        outline-width: 1px;
+    }
     .correct-answer-select {
+        accent-color: rgb(52, 94, 59);
         width:2rem;
         height:2rem;
         position:absolute;
@@ -24,6 +34,7 @@
         z-index: 1;
     }
     .answer-text-input {
+        border-radius: 5px;
         color:var(--slide-answer-text);
         text-align: center;
         vertical-align: middle;
@@ -35,8 +46,12 @@
         background-color: transparent;
         padding: 2px;
     }
+    .answer-text-input:hover {
+        outline-color: var(--slide-darker-text);
+        outline-style: solid;
+        outline-width: 1px;
+    }
     .answer-text-input:focus {
-        border-radius: 5px;
         outline-color: whitesmoke;
         outline-style: solid;
         outline-width: 1px;
