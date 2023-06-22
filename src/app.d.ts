@@ -8,7 +8,10 @@ import type { User } from "./lib/models/user";
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			code?: string;
+			id?: string;
+		}
 		interface Locals {
 			loginSession: LoginSession | null | undefined;
 		}
