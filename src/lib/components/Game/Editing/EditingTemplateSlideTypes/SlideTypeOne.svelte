@@ -10,7 +10,7 @@
     flex: 1;
 }
 .padding {
-    padding: 0.5rem;
+    padding: 1%;
 }
 .question-outline {
     border-radius: 5px;

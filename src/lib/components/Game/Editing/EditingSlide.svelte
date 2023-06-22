@@ -19,7 +19,7 @@
         flex:1;
     }
     .padding {
-        padding: 0.5rem;
+        padding: 0.5%;
     }
     .answer-wrapper {
         flex:1;

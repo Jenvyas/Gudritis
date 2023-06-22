@@ -6,6 +6,8 @@
     import type { LoginSession } from "$lib/models/session";
     import { error } from "@sveltejs/kit";
     import ChoosingEditingSlide from "$lib/components/Game/Editing/ChoosingEditingSlide.svelte";
+    import SlideTypeOne from "$lib/components/Game/Editing/EditingTemplateSlideTypes/SlideTypeOne.svelte";
+    import SlideTypeTwo from "$lib/components/Game/Editing/EditingTemplateSlideTypes/SlideTypeTwo.svelte";
 
     const user: LoginSession = get(loginSession);
 
@@ -36,10 +38,7 @@
         ],
         author: user.nickname,
         author_id: user._id,
-    };
-
-    console.log(template.slides.length);
-    
+    };    
 
     let activeSlideIndex: number = 0;
 
@@ -83,6 +82,31 @@
         width:1.25rem;
         accent-color: var(--slide-answer-panel);
     }
+    .change-slide-type {
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .change-slide-type .container {
+        height:100%;
+    }
+    .change-slide-type button {
+        padding:0;
+        background-color: transparent;
+        border:none;
+        width:100%;
+        height:100%;
+    }
+    .type-wrapper {
+        display:flex;
+        height:100%;
+        width:100%;
+    }
+    .container {
+        flex: 1 0 40%;
+        height:100%;
+        padding:2%;
+    }
     .duration {
         color:var(--slide-text);
         background-color: var(--slide-answer-panel);
@@ -98,9 +122,13 @@
         outline-width: 1px;
     }
     article {
-        padding-top: 3rem;
-        padding-bottom: 3rem;
+        display:flex;
+        flex-direction: column;
         width:100%;
+        padding-top: 2rem;
+        padding-bottom:1rem;
+        align-items: center;
+        justify-content: center;
     }
     .slide-change-button  {
         width:5rem;
@@ -123,7 +151,17 @@
     .slide-change-button .mi {
         font-size: 3rem;
     }
-
+    .page-count {
+        color: var(--slide-darker-text);
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+        padding:3px;
+        background-color: var(--background-nav);
+        border-radius: 5px;
+    }
+    .hidden {
+        visibility: hidden;
+    }
 </style>
 
 <div class="editing-panel">
@@ -137,8 +175,10 @@
     <article>
         {#if activeSlideIndex < template.slides.length && activeSlideIndex >= 0}
         <EditingSlide bind:slide={template.slides[activeSlideIndex]} />
+        <div class="page-count">{`(${activeSlideIndex+1}/${template.slides.length})`}</div>
         {:else} 
         <ChoosingEditingSlide bind:slides={template.slides} bind:index={activeSlideIndex}/>
+        <div class="page-count hidden">{`(${activeSlideIndex+1}/${template.slides.length})`}</div>
         {/if}
     </article>
     
@@ -188,6 +228,21 @@
                 bind:value={template.slides[activeSlideIndex].duration}
                 required
             />
+        </li>
+        <li class="change-slide-type">
+            Slide type
+            <div class="type-wrapper">
+                <div class="container">
+                    <button>
+                        <SlideTypeOne/>
+                    </button>
+                </div>
+                <div class="container">
+                    <button>
+                        <SlideTypeTwo/>
+                    </button>
+                </div>
+            </div>
         </li>
         {/if}
     </menu>
