@@ -33,6 +33,9 @@
         right:0;
         z-index: 1;
     }
+    .correct-answer-error {
+        outline: solid var(--error) 3px;
+    }
     .answer-text-input {
         border-radius: 5px;
         color:var(--slide-answer-text);
@@ -66,20 +69,39 @@
     .placeholder-text:focus::before {
         content: "";
     }
+    .answer-error {
+        outline: solid var(--error);
+        background-color: var(--error-darker);
+    }
 </style>
 
 <script lang="ts">
+    interface AnswerError {
+        index: number;
+        message: string;
+    }
+    import { createEventDispatcher } from "svelte";
     export let text: string;
     export let isMultipleAnswer = false;
     export let index: number;
     export let correctAnswer: Array<number>;
+    export let answerError: AnswerError | undefined = undefined;
+    export let correctAnswerError: boolean | undefined = undefined;
+    let dispatch = createEventDispatcher();
     $: isChecked = correctAnswer.includes(index);
     $: answerEmpty = text.trim()==="";
 </script>
 
 <div class:correct={isChecked} class="answer">
-    <div class="answer-text-input" bind:textContent={text} class:placeholder-text={answerEmpty} contenteditable="true"></div>
-    <input class="correct-answer-select" type="checkbox" on:input={(e)=>{
+    <div class="answer-text-input" 
+    class:answer-error={answerError !== undefined} 
+    bind:textContent={text} 
+    class:placeholder-text={answerEmpty} 
+    contenteditable="true" 
+    on:input={()=>{dispatch("removeAnswerError")}}></div>
+    <input class="correct-answer-select"
+    class:correct-answer-error={correctAnswerError}
+    type="checkbox" on:input={(e)=>{
         if (isMultipleAnswer && e.currentTarget.checked) {
             correctAnswer = [...correctAnswer, index];
         } else if (!isMultipleAnswer && e.currentTarget.checked) {
@@ -87,5 +109,6 @@
         } else {
             correctAnswer = correctAnswer.filter(i=>i!==index);
         }
+        dispatch("removeCorrectAnswerError");
     }} bind:checked={isChecked}/>
 </div>

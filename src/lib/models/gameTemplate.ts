@@ -17,6 +17,7 @@ export interface Slide {
 }
 
 export interface GameTemplate {
+    _id?: string;
     name: string;
     tags: string;
     slides: Array<Slide>;

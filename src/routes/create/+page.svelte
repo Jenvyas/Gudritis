@@ -8,6 +8,10 @@
     import ChoosingEditingSlide from "$lib/components/Game/Editing/ChoosingEditingSlide.svelte";
     import SlideTypeOne from "$lib/components/Game/Editing/EditingTemplateSlideTypes/SlideTypeOne.svelte";
     import SlideTypeTwo from "$lib/components/Game/Editing/EditingTemplateSlideTypes/SlideTypeTwo.svelte";
+    import { slideValidate, type SlideError } from "$lib/validation/templateValidation";
+    import SubmitPrompt from "$lib/components/Game/Editing/SubmitPrompt.svelte";
+
+    let noName = false;
 
     const user: LoginSession = get(loginSession);
 
@@ -16,7 +20,7 @@
     }
 
     let template: GameTemplate = {
-        name: "Template name",
+        name: "",
         tags: "",
         slides: [
             {
@@ -43,6 +47,87 @@
     let activeSlideIndex: number = 0;
 
     let oldDuration = template.slides[activeSlideIndex].duration;
+
+    let slideErrors: Array<SlideError> = [];
+
+    $: slidesNotValid = !(slideErrors.length === 0);
+
+    let showSubmit = false;
+
+    let awaitingResponse = false;
+    
+    const localValidateTemplate = (template: GameTemplate): boolean => {
+        const invalidSlides: Array<SlideError> = template.slides.reduce(slideValidate, [] as Array<SlideError>);
+
+        if (invalidSlides.length!==0) {
+            slideErrors = invalidSlides;
+            return false;
+        }
+        return true;
+    }
+
+    const createTemplate = (template: GameTemplate) => {
+        if(!localValidateTemplate(template)){
+            console.error("Submitted slide info was not valid.");
+            return;
+        };
+
+        showSubmit = true;
+    }
+
+    const submitTemplate = async (template: GameTemplate) => {
+        if (template.name === "") {
+            noName = true;
+            return;
+        }
+        try {
+            const res = await fetch("/game-template", {
+                method: "POST",
+                body: JSON.stringify(template),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const body = await res.json()
+            console.log(body);
+        } catch (error) {
+
+        }
+    }
+
+    const removeErrorIfValid = (errorIndex: number) => {
+        const error = slideErrors[errorIndex];
+        if (!(error.correctAnswerOutOfBounds 
+        || error.durationTooLong 
+        || error.durationTooShort 
+        || error.invalidQuestion 
+        || (error.invalidAnswers.length !== 0) 
+        || error.multipleCorrectOnSingleAnswer 
+        || error.noCorrectAnswer)) {
+            slideErrors.splice(errorIndex, 1);
+        }        
+    }
+
+    const removeAnswerError = (e: CustomEvent<any>, slideIndex: number) => {
+        const answerIndex = e.detail.index;
+        let errorIndex = slideErrors.findIndex(i=>i.index===slideIndex);
+        if (errorIndex === -1) {
+            return;
+        }
+        slideErrors[errorIndex].invalidAnswers = slideErrors[errorIndex].invalidAnswers.filter((e)=>e.index!==answerIndex);
+        removeErrorIfValid(errorIndex);
+    }
+
+    const removeCorrectAnswerError = (slideIndex: number) => {
+        let errorIndex = slideErrors.findIndex(i=>i.index===slideIndex);
+        if (errorIndex === -1) {
+            return;
+        }
+        slideErrors[errorIndex].noCorrectAnswer = false;
+        slideErrors[errorIndex].correctAnswerOutOfBounds = false;
+        slideErrors[errorIndex].multipleCorrectOnSingleAnswer = false;
+        removeErrorIfValid(errorIndex);
+    }
 </script>
 
 <style>
@@ -101,6 +186,10 @@
         display:flex;
         height:100%;
         width:100%;
+        margin-top: 5%;
+    }
+    .current-type {
+        outline:solid red 2px;
     }
     .container {
         flex: 1 0 40%;
@@ -165,7 +254,7 @@
 </style>
 
 <div class="editing-panel">
-    <button class="slide-change-button" disabled={activeSlideIndex < 0} on:click={e=>{
+    <button class="slide-change-button" disabled={activeSlideIndex < 0 || (template.slides.length === 0)} on:click={e=>{
         activeSlideIndex--;
     }}>
         <i class="mi mi-chevron-left"><span class="u-sr-only">Go left slide</span></i>
@@ -174,7 +263,10 @@
     
     <article>
         {#if activeSlideIndex < template.slides.length && activeSlideIndex >= 0}
-        <EditingSlide bind:slide={template.slides[activeSlideIndex]} />
+        <EditingSlide bind:slide={template.slides[activeSlideIndex]} 
+            on:removeCorrectAnswerError={()=>{removeCorrectAnswerError(activeSlideIndex)}} 
+            on:removeAnswerError={(e)=>{removeAnswerError(e, activeSlideIndex)}}
+            slideError={slideErrors.find(e=>e.index===activeSlideIndex)}/>
         <div class="page-count">{`(${activeSlideIndex+1}/${template.slides.length})`}</div>
         {:else} 
         <ChoosingEditingSlide bind:slides={template.slides} bind:index={activeSlideIndex}/>
@@ -183,7 +275,7 @@
     </article>
     
 
-    <button class="slide-change-button" disabled={activeSlideIndex >= template.slides.length} on:click={e=>{
+    <button class="slide-change-button" disabled={activeSlideIndex >= template.slides.length || (template.slides.length === 0)} on:click={e=>{
             activeSlideIndex++;
         }}>
         <i class="mi mi-chevron-right"><span class="u-sr-only">Go right slide</span></i>
@@ -233,19 +325,44 @@
             Slide type
             <div class="type-wrapper">
                 <div class="container">
-                    <button>
+                    <button class:current-type={template.slides[activeSlideIndex].answers.length === 2} on:click={()=>{
+                        if (template.slides[activeSlideIndex].answers.length !== 2) {
+                            template.slides[activeSlideIndex].answers = template.slides[activeSlideIndex].answers.splice(0, 2);
+                            template.slides[activeSlideIndex].correctAnswer = template.slides[activeSlideIndex].correctAnswer.filter(i=>{
+                                return i<3;
+                            })
+                            slideErrors = slideErrors.filter(e=>e.index!==activeSlideIndex);
+                        }
+                    }}>
                         <SlideTypeOne/>
                     </button>
                 </div>
                 <div class="container">
-                    <button>
+                    <button class:current-type={template.slides[activeSlideIndex].answers.length === 4} on:click={()=>{
+                        if (template.slides[activeSlideIndex].answers.length !== 4) {
+                            template.slides[activeSlideIndex].answers = [...template.slides[activeSlideIndex].answers, {index:2, text:""}, {index:3, text:""}];
+                            slideErrors = slideErrors.filter(e=>e.index!==activeSlideIndex);
+                        }
+                    }}>
                         <SlideTypeTwo/>
                     </button>
                 </div>
             </div>
         </li>
+        <button on:click={()=>{
+            slideErrors = slideErrors.filter((e)=>e.index!==activeSlideIndex);
+            slideErrors = slideErrors.map(e=>{
+                if (e.index > activeSlideIndex) {
+                    e.index--;
+                }
+                return e;
+            });
+            template.slides = template.slides.filter((_slide,index)=>index!==activeSlideIndex);
+        }}>Delete slide</button>
+        <button disabled={slidesNotValid} on:click={()=>{createTemplate(template)}}>Done</button>
         {/if}
     </menu>
 </div>
-
-
+<SubmitPrompt bind:showModal = {showSubmit} on:submit={()=>submitTemplate(template)}>
+    <input type="text" maxlength="32" bind:value={template.name}>
+</SubmitPrompt>

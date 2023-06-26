@@ -1,8 +1,15 @@
 <script lang="ts">
     import type { Slide } from "$lib/models/gameTemplate";
+    import type { SlideError } from "$lib/validation/templateValidation";
     import EditingAnswer from "./EditingAnswer.svelte";
+    import { createEventDispatcher } from "svelte";
+
+    let dispatch = createEventDispatcher();
 
     export let slide: Slide;
+
+    export let slideError: SlideError | undefined = undefined;
+
     $: questionEmpty = slide.text?.trim()==="";
 </script>
 
@@ -78,7 +85,7 @@
 <section>
     <div class="container padding">
         <div class="question-wrapper">
-            <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty}></div>
+            <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty} ></div>
         </div>
     </div>
     <div class="container">
@@ -90,6 +97,14 @@
                     bind:text={answer.text}
                     isMultipleAnswer={slide.isMultipleAnswer}
                     bind:correctAnswer={slide.correctAnswer}
+                    on:removeAnswerError={()=>{
+                        dispatch("removeAnswerError", {index: answer.index});
+                    }}
+                    on:removeCorrectAnswerError={()=>{
+                        dispatch("removeCorrectAnswerError");
+                    }}
+                    answerError={slideError?.invalidAnswers.find(e=>e.index===answer.index)}
+                    correctAnswerError={slideError?.correctAnswerOutOfBounds || slideError?.multipleCorrectOnSingleAnswer || slideError?.noCorrectAnswer}
                 />
             </div>
             {/each}
