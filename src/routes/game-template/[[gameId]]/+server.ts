@@ -83,7 +83,7 @@ export const GET: RequestHandler = async (event) => {
 export const PUT: RequestHandler = async (event) => {
     const { gameId } = event.params;
 
-    const newTemplate: GameTemplate = await event.request.json();
+    const newTemplate: StoredGameTemplate = await event.request.json();
     
     const session = event.locals.loginSession;
 
@@ -131,7 +131,15 @@ export const PUT: RequestHandler = async (event) => {
     }
     
     try {
-        gameTemplates?.findOneAndUpdate({_id: gameId},{...newTemplate});
+        await gameTemplates?.findOneAndUpdate({_id: gameId},{
+            $set:{
+                name: newTemplate.name,
+                tags: newTemplate.tags,
+                slides: newTemplate.slides,
+                public: newTemplate.public,
+                last_updated: new Date(),
+            }
+        });
     } catch (err) {
         throw error(503, "There was a problem while contacting the database");
     }
