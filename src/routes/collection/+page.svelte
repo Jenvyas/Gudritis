@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
+    import DropdownOptions from "$lib/components/Collection/DropdownOptions.svelte";
+import type { PageData } from "./$types";
 
     export let data: PageData;
     let templates = data.templates;
@@ -17,7 +18,7 @@
                         <div role="columnheader" aria-colindex={4} class="template-created-date">Created</div>
                     </div>
                 </div>
-                
+                <hr>
                 <div class="template-list">
                     {#each templates as template, i}
                         <div class="template-row" aria-rowindex={i+2}>
@@ -25,6 +26,7 @@
                             <div aria-colindex={2} class="template-name">{template.name}</div>
                             <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
                             <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
+                            <div aria-colindex={5} class="template-options"><DropdownOptions bind:template></DropdownOptions></div>
                         </div>
                     {/each}
                 </div>
@@ -39,6 +41,9 @@
 
 
 <style>
+    hr {
+        color: var(--slide-darker-text);
+    }
     .container {
         width: 100%;
         padding: 1%;

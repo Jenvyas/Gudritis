@@ -213,6 +213,10 @@ export const POST: RequestHandler = async (event) => {
     );
 }
 
+export const DELETE: RequestHandler = async (event) => {
+    return json({},{});
+}
+
 const validateTemplate = (template: GameTemplate): ValidationResult => {
     let validationResult: ValidationResult = {
         statusCode: 200,
