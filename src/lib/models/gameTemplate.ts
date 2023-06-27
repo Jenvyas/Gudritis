@@ -19,7 +19,7 @@ export interface Slide {
 export interface StoredGameTemplate {
     _id?: string;
     name: string;
-    tags: string;
+    tags: Array<string>;
     slides: Array<Slide>;
     author: string;
     author_id: string;
@@ -31,7 +31,7 @@ export interface StoredGameTemplate {
 
 export interface GameTemplate {
     name: string;
-    tags: string;
+    tags: Array<string>;
     slides: Array<Slide>;
     author: string;
     author_id: string;

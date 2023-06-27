@@ -20,7 +20,7 @@
 
     let template: GameTemplate = {
         name: "",
-        tags: "",
+        tags: [],
         slides: [
             {
                 duration: 10,
