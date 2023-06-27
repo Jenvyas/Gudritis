@@ -8,7 +8,7 @@
         display:flex;
         justify-content: center;
         align-items: center;
-        border-radius: 10px;
+        border-radius: 5px;
     }
     .correct {
         background-color: rgb(77, 139, 87);
@@ -37,7 +37,7 @@
         outline: solid var(--error) 3px;
     }
     .answer-text-input {
-        border-radius: 5px;
+        border-radius: 3px;
         color:var(--slide-answer-text);
         text-align: center;
         vertical-align: middle;

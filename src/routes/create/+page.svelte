@@ -275,7 +275,7 @@
         display:flex;
         justify-content: space-between;
         background-color: var(--background-nav);
-        border-radius: 5px;
+        border-radius: 3px;
         border: 1px solid;
         border-color: var(--slide-answer-panel);
         padding:5px;
@@ -368,7 +368,7 @@
         margin-top: 0.5rem;
         padding:3px;
         background-color: var(--background-nav);
-        border-radius: 5px;
+        border-radius: 3px;
     }
     .hidden {
         visibility: hidden;

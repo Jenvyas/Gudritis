@@ -51,7 +51,7 @@
         display:flex;
         flex-direction: column;
         background-color: var(--background-nav);
-        border-radius: 10px;
+        border-radius: 5px;
     } 
     .container {
         flex:1;
@@ -71,7 +71,7 @@
     }
     .question-wrapper {
         height:100%;
-        border-radius: 10px;
+        border-radius: 5px;
         background-color: var(--slide-panel);
         display:flex;
         justify-content: center;
