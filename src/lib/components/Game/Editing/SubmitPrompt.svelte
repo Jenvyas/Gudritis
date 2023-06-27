@@ -3,6 +3,8 @@
 
 	export let showModal: boolean;
 
+	export let disableSubmit: boolean = false;
+
 	let dialog: HTMLDialogElement;
 
 	let dispatch = createEventDispatcher();
@@ -20,8 +22,10 @@
 		<slot name="header" />
 		<slot />
 		<!-- svelte-ignore a11y-autofocus -->
-		<button autofocus on:click={() => dialog.close()}>Close</button>
-		<button on:click={()=>{dispatch('submit');}}>Create</button>
+		<div class="container">
+			<button autofocus on:click={() => dialog.close()}>Close</button>
+			<button on:click={()=>{dispatch('submit');}} disabled={disableSubmit}>Create</button>
+		</div>
 	</div>
 </dialog>
 
@@ -62,5 +66,9 @@
 	}
 	button {
 		display: block;
+	}
+	.container {
+		display:flex;
+		justify-content: space-between;
 	}
 </style>

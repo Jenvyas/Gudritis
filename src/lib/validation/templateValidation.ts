@@ -1,4 +1,4 @@
-import type { Slide } from "$lib/models/gameTemplate";
+import type { GameTemplate, Slide } from "$lib/models/gameTemplate";
 
 export interface SlideError {
     index: number;

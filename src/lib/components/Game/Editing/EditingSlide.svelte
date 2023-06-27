@@ -13,6 +13,37 @@
     $: questionEmpty = slide.text?.trim()==="";
 </script>
 
+<section>
+    <div class="container padding">
+        <div class="question-wrapper">
+            <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty} ></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="answer-wrapper">
+            {#each slide.answers as answer}
+            <div class="container padding">
+                <EditingAnswer
+                    index={answer.index}
+                    bind:text={answer.text}
+                    isMultipleAnswer={slide.isMultipleAnswer}
+                    bind:correctAnswer={slide.correctAnswer}
+                    on:removeAnswerError={()=>{
+                        dispatch("removeAnswerError", {index: answer.index});
+                    }}
+                    on:removeCorrectAnswerError={()=>{
+                        dispatch("removeCorrectAnswerError");
+                    }}
+                    answerError={slideError?.invalidAnswers.find(e=>e.index===answer.index)}
+                    correctAnswerError={slideError?.correctAnswerOutOfBounds || slideError?.multipleCorrectOnSingleAnswer || slideError?.noCorrectAnswer}
+                />
+            </div>
+            {/each}
+        </div>
+    </div>
+    
+</section>
+
 <style>
     section {
         width: 100%;
@@ -81,36 +112,5 @@
         content: "";
     }
 </style>
-
-<section>
-    <div class="container padding">
-        <div class="question-wrapper">
-            <div class="question-text" bind:innerText={slide.text} contenteditable="true" class:placeholder-text={questionEmpty} ></div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="answer-wrapper">
-            {#each slide.answers as answer}
-            <div class="container padding">
-                <EditingAnswer
-                    index={answer.index}
-                    bind:text={answer.text}
-                    isMultipleAnswer={slide.isMultipleAnswer}
-                    bind:correctAnswer={slide.correctAnswer}
-                    on:removeAnswerError={()=>{
-                        dispatch("removeAnswerError", {index: answer.index});
-                    }}
-                    on:removeCorrectAnswerError={()=>{
-                        dispatch("removeCorrectAnswerError");
-                    }}
-                    answerError={slideError?.invalidAnswers.find(e=>e.index===answer.index)}
-                    correctAnswerError={slideError?.correctAnswerOutOfBounds || slideError?.multipleCorrectOnSingleAnswer || slideError?.noCorrectAnswer}
-                />
-            </div>
-            {/each}
-        </div>
-    </div>
-    
-</section>
 
 

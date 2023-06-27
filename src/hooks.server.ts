@@ -1,11 +1,11 @@
 import { DB_CONN_STRING, DB_NAME, GAMETEMPLATES_COLLECTION_NAME, USERS_COLLECTION_NAME, SESSIONS_COLLECTION_NAME } from "$env/static/private";
-import type { GameTemplate } from "./lib/models/gameTemplate";
+import type { GameTemplate, StoredGameTemplate } from "./lib/models/gameTemplate";
 import type { User } from './lib/models/user';
 import type { Session } from './lib/models/session';
 import * as mongoDB from "mongodb";
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 
-export const collections: { gameTemplates?: mongoDB.Collection<GameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session> } = {}
+export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session> } = {}
 
 export async function connectToDatabase() {
     const client: mongoDB.MongoClient = new mongoDB.MongoClient(DB_CONN_STRING);
@@ -14,7 +14,7 @@ export async function connectToDatabase() {
 
     const db: mongoDB.Db = client.db(DB_NAME);
 
-    const gameTemplatesCollection: mongoDB.Collection<GameTemplate> = db.collection(GAMETEMPLATES_COLLECTION_NAME);
+    const gameTemplatesCollection: mongoDB.Collection<StoredGameTemplate> = db.collection(GAMETEMPLATES_COLLECTION_NAME);
 
     const usersCollection: mongoDB.Collection<User> = db.collection(USERS_COLLECTION_NAME);
 

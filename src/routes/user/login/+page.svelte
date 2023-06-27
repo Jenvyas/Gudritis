@@ -81,3 +81,4 @@
     {/if}
     <button on:click|preventDefault={login}>Sign In</button>
 </form>
+<a href="/user/register">register</a>

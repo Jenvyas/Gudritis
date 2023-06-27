@@ -16,8 +16,20 @@ export interface Slide {
     correctAnswer: Array<number>;
 }
 
-export interface GameTemplate {
+export interface StoredGameTemplate {
     _id?: string;
+    name: string;
+    tags: string;
+    slides: Array<Slide>;
+    author: string;
+    author_id: string;
+    created: Date;
+    last_updated: Date;
+    flagged: boolean;
+    public: boolean;
+}
+
+export interface GameTemplate {
     name: string;
     tags: string;
     slides: Array<Slide>;

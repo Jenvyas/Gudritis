@@ -1,16 +1,83 @@
-import { gameTemplates, type GameTemplate } from "$lib/models/gameTemplate";
+import { gameTemplates, type GameTemplate, type StoredGameTemplate } from "$lib/models/gameTemplate";
 import type { RequestHandler } from "@sveltejs/kit";
 import { v4 as uuidv4 } from 'uuid';
 import { error, json } from "@sveltejs/kit";
 import type { WithId } from "mongodb";
 import { slideValidate, type SlideError } from "$lib/validation/templateValidation";
 
-
-
 interface ValidationResult {
     statusCode: number,
     message: string,
     errors: Array<App.Error | SlideError>
+}
+
+interface TemplateRequest {
+    _id?: string;
+    amount?: number;
+    start_from?: number;
+    sort_by?: string;
+}
+
+export const GET: RequestHandler = async (event) => {
+    const session = event.locals.loginSession;
+
+    const req = event.request;
+
+    const body: TemplateRequest = await req.json();
+
+    let templates: Array<StoredGameTemplate> | null | undefined = [];
+
+    if (body._id) {
+        const template = await gameTemplates?.findOne({_id: body._id});
+        if (!template || (template.public===false && (template.author_id!==session?._id))) {
+            return json({
+                message: "No template found",
+                templates: [],
+            })
+        }
+        templates.push(template);
+    } else if (body.amount && body.start_from && body.sort_by) {
+        if(body.amount>100){
+            throw error(401, "Max templates per request: 100");
+        }
+
+        if (body.start_from && (body.start_from<0 || !Number.isInteger(body.start_from))) {
+            throw error(401, "start_from has to be a positive integer");
+        }
+
+        switch (body.sort_by) {
+            case "EDIT_DATE_DESC":
+                templates = await gameTemplates?.find().sort({last_updated: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+                break;
+            case "EDIT_DATE_ASC":
+                templates = await gameTemplates?.find().sort({last_updated: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+                break;
+            case "CREATE_DATE_DESC":
+                templates = await gameTemplates?.find().sort({create: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+                break;
+            case "CREATE_DATE_ASC":
+                templates = await gameTemplates?.find().sort({create: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+                break;
+            default:
+                templates = await gameTemplates?.find().skip(body.start_from || 0).limit(body.amount || 20).toArray();
+                break;
+        }
+
+    } else {
+        throw error(401, "Bad request");
+    }
+
+    if(!templates) {
+        return json({
+            message: "No templates found",
+            templates: []
+        });
+    }
+
+    return json({
+        message: "Templates were retrieved successfully",
+        templates
+    });
 }
 
 export const PUT: RequestHandler = async (event) => {
@@ -39,7 +106,7 @@ export const POST: RequestHandler = async (event) => {
         throw error(401, "No user found");
     }
 
-    if (template.author_id === "") {
+    if (template.author_id === "" || !template.author_id) {
         throw error(401, "No user provided");
     }
 
@@ -61,12 +128,16 @@ export const POST: RequestHandler = async (event) => {
         );
     }
 
-    const templateId = uuidv4();
+    let createdTemplateId = uuidv4();
 
     try {
         await gameTemplates?.insertOne(
             {
-                _id: templateId,
+                _id: createdTemplateId,
+                flagged: false,
+                created: new Date(),
+                last_updated: new Date(),
+                public: false,
                 ...template
             }
         );
@@ -77,7 +148,7 @@ export const POST: RequestHandler = async (event) => {
     return json(
         {
             message: "Template succesfully created",
-            templateId,
+            template_id: createdTemplateId,
         },
         {
             status: 200,
@@ -92,12 +163,12 @@ const validateTemplate = (template: GameTemplate): ValidationResult => {
         errors: [],
     }
 
-    if (template.name === "") {
+    if (template.name === "" || !template.name) {
         validationResult.statusCode = 400;
         validationResult.errors = [...validationResult.errors, {code:"NO_NAME", message: "Game Template must have a name"}];
     }
 
-    if (template.name.length > 24) {
+    if (template.name.length > 24 || template.name.length === undefined) {
         validationResult.statusCode = 400;
         validationResult.errors = [...validationResult.errors, {code:"MAX_NAME", message: "Game Template name cannot exceed 24 characters"}];
     }
