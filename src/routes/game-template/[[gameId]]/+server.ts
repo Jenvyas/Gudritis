@@ -83,16 +83,65 @@ export const GET: RequestHandler = async (event) => {
 export const PUT: RequestHandler = async (event) => {
     const { gameId } = event.params;
 
-    const template: WithId<GameTemplate> = await event.request.json();
-
+    const newTemplate: GameTemplate = await event.request.json();
+    
     const session = event.locals.loginSession;
+
+    if (!session?._id) {
+        throw error(401, "No user found");
+    }
+
+    if (!gameId) {
+        throw error(401, "No template_id provided");
+    }
+
+    let oldTemplate: StoredGameTemplate | null | undefined;
+
+    try {
+        oldTemplate = await gameTemplates?.findOne({_id: gameId});
+    } catch (err) {
+        throw error(503, "There was a problem while contacting the database");
+    }
+
+    if (!oldTemplate) {
+        throw error(401, "No template found");
+    }
+
+    if (newTemplate.author_id === "" || !newTemplate.author_id) {
+        throw error(401, "No user provided");
+    }
+
+    if (newTemplate.author_id !== session._id || oldTemplate.author_id !== session._id) {
+        throw error(401, "Template author does not match user session");
+    }
+
+    
+    const validationResult = validateTemplate(newTemplate);
+    
+    if (validationResult.statusCode !== 200) {
+        return json(
+            {
+                message: validationResult.message,
+                errors: validationResult.errors,
+            },
+            {
+                status: validationResult.statusCode,
+            }
+        );
+    }
+    
+    try {
+        gameTemplates?.findOneAndUpdate({_id: gameId},{...newTemplate});
+    } catch (err) {
+        throw error(503, "There was a problem while contacting the database");
+    }
 
     return json(
         {
-            message: ""
+            message: "Template successfully updated"
         },
         {
-            headers: {}
+            status: 200
         }
     );
 }
