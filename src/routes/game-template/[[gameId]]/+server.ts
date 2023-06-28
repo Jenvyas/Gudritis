@@ -141,17 +141,11 @@ export const PUT: RequestHandler = async (event) => {
             }
         });
     } catch (err) {
+        console.error(err);
         throw error(503, "There was a problem while contacting the database");
     }
 
-    return json(
-        {
-            message: "Template successfully updated"
-        },
-        {
-            status: 200
-        }
-    );
+    return json("Template successfully updated");
 }
 
 export const POST: RequestHandler = async (event) => {

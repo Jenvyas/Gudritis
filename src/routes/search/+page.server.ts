@@ -7,7 +7,16 @@ export const load: PageServerLoad = async ({ locals }) => {
     if (!loginSession) {
         throw redirect(302, '/user/login');
     }
-    const templates: Array<StoredGameTemplate> | null | undefined = await gameTemplates?.find({public: true}).toArray();
+
+    let templates: Array<StoredGameTemplate> | null | undefined;
+
+    if (loginSession.role === "user") {
+        templates = await gameTemplates?.find({public: true, flagged: false}).toArray();
+    }
+
+    if (loginSession.role === "admin") {
+        templates = await gameTemplates?.find().toArray();
+    }
     
     return { templates };
 }

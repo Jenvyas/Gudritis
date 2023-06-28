@@ -9,14 +9,14 @@
         const newTemplate: StoredGameTemplate = {...template, public: !template.public };
         try {
             const res = await fetch(`/game-template/${template._id}`, {
-                method: "POST",
+                method: "PUT",
                 body: JSON.stringify(newTemplate),
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
             const fromEndpoint = await res.json();
-            if (fromEndpoint.status === 200) {
+            if (res.status === 200) {
                 template = newTemplate;
             } else {
                 throw new Error(fromEndpoint.message);
