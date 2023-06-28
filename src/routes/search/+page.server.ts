@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     if (loginSession.role === "admin") {
-        templates = await gameTemplates?.find().toArray();
+        templates = await gameTemplates?.find().sort({ flagged: -1 }).toArray();
     }
     
     return { templates };

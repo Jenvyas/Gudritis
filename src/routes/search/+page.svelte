@@ -1,12 +1,26 @@
 <script lang="ts">
+    import DropdownSearch from "$lib/components/Search/DropdownSearch.svelte";
+    import type { LoginSession } from "$lib/models/session";
+    import { get } from "svelte/store";
     import type { PageData } from "./$types";
+    import { loginSession } from "$lib/stores";
+    import type { GameTemplate, StoredGameTemplate } from "$lib/models/gameTemplate";
+    import { error } from "@sveltejs/kit";
+
+    const user: LoginSession = get(loginSession);
+    
+    if (!user) {
+        throw error(404, {message: "User not found"});
+    }
 
     export let data: PageData;
+
     let templates = data.templates;
 </script>
 
 <div class="container">
     <article>
+        {#if user.role === "user"}
         <section>
             {#if templates && templates.length!==0}
                 <div>
@@ -25,6 +39,7 @@
                             <div aria-colindex={2} class="template-name">{template.name}</div>
                             <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
                             <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
+                            <DropdownSearch bind:template></DropdownSearch>
                         </div>
                     {/each}
                 </div>
@@ -34,6 +49,36 @@
                 </div>
             {/if}
         </section>
+        {:else if user.role === "admin"}
+        <section>
+            {#if templates && templates.length!==0}
+                <div>
+                    <div role="row" aria-rowindex={1} class="template-header-row">
+                        <div role="columnheader" aria-colindex={1} class="template-number">#</div>
+                        <div role="columnheader" aria-colindex={2} class="template-name">Name</div>
+                        <div role="columnheader" aria-colindex={3} class="template-slide-length">Slides</div>
+                        <div role="columnheader" aria-colindex={4} class="template-created-date">Created</div>
+                    </div>
+                </div>
+                
+                <div class="template-list">
+                    {#each templates as template, i}
+                        <div class="template-row" aria-rowindex={i+2}>
+                            <div aria-colindex={1} class="template-number">{i+1}</div>
+                            <div aria-colindex={2} class="template-name">{template.name}</div>
+                            <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
+                            <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
+                            <DropdownSearch bind:template></DropdownSearch>
+                        </div>
+                    {/each}
+                </div>
+            {:else}
+                <div>
+                    No Templates could be found
+                </div>
+            {/if}
+        </section>
+        {/if}
     </article>
 </div>
 

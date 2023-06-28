@@ -11,24 +11,17 @@ interface ValidationResult {
     errors: Array<App.Error | SlideError>
 }
 
-interface TemplateRequest {
-    _id?: string;
-    amount?: number;
-    start_from?: number;
-    sort_by?: string;
-}
-
 export const GET: RequestHandler = async (event) => {
+    const templateId = event.params.gameId;
+
     const session = event.locals.loginSession;
 
     const req = event.request;
 
-    const body: TemplateRequest = await req.json();
-
     let templates: Array<StoredGameTemplate> | null | undefined = [];
 
-    if (body._id) {
-        const template = await gameTemplates?.findOne({_id: body._id});
+    if (templateId) {
+        const template = await gameTemplates?.findOne({_id: templateId});
         if (!template || (template.public===false && (template.author_id!==session?._id))) {
             return json({
                 message: "No template found",
@@ -36,32 +29,32 @@ export const GET: RequestHandler = async (event) => {
             })
         }
         templates.push(template);
-    } else if (body.amount && body.start_from && body.sort_by) {
-        if(body.amount>100){
-            throw error(401, "Max templates per request: 100");
-        }
+    // } else if (body.amount && body.start_from && body.sort_by) {
+    //     if(body.amount>100){
+    //         throw error(401, "Max templates per request: 100");
+    //     }
 
-        if (body.start_from && (body.start_from<0 || !Number.isInteger(body.start_from))) {
-            throw error(401, "start_from has to be a positive integer");
-        }
+    //     if (body.start_from && (body.start_from<0 || !Number.isInteger(body.start_from))) {
+    //         throw error(401, "start_from has to be a positive integer");
+    //     }
 
-        switch (body.sort_by) {
-            case "EDIT_DATE_DESC":
-                templates = await gameTemplates?.find().sort({last_updated: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
-                break;
-            case "EDIT_DATE_ASC":
-                templates = await gameTemplates?.find().sort({last_updated: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
-                break;
-            case "CREATE_DATE_DESC":
-                templates = await gameTemplates?.find().sort({create: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
-                break;
-            case "CREATE_DATE_ASC":
-                templates = await gameTemplates?.find().sort({create: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
-                break;
-            default:
-                templates = await gameTemplates?.find().skip(body.start_from || 0).limit(body.amount || 20).toArray();
-                break;
-        }
+    //     switch (body.sort_by) {
+    //         case "EDIT_DATE_DESC":
+    //             templates = await gameTemplates?.find().sort({last_updated: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+    //             break;
+    //         case "EDIT_DATE_ASC":
+    //             templates = await gameTemplates?.find().sort({last_updated: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+    //             break;
+    //         case "CREATE_DATE_DESC":
+    //             templates = await gameTemplates?.find().sort({create: -1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+    //             break;
+    //         case "CREATE_DATE_ASC":
+    //             templates = await gameTemplates?.find().sort({create: 1}).skip(body.start_from || 0).limit(body.amount || 20).toArray();
+    //             break;
+    //         default:
+    //             templates = await gameTemplates?.find().skip(body.start_from || 0).limit(body.amount || 20).toArray();
+    //             break;
+    //     }
 
     } else {
         throw error(401, "Bad request");
@@ -182,14 +175,16 @@ export const POST: RequestHandler = async (event) => {
     let createdTemplateId = uuidv4();
 
     try {
+        console.log(template);
+        
         await gameTemplates?.insertOne(
             {
+                ...template,
                 _id: createdTemplateId,
                 flagged: false,
                 created: new Date(),
                 last_updated: new Date(),
                 public: false,
-                ...template
             }
         );
     } catch (err) {

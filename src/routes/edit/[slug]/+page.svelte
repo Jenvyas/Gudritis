@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Slide, GameTemplate, StoredGameTemplate } from "$lib/models/gameTemplate";
+    import type { Slide, StoredGameTemplate, GameTemplate } from "$lib/models/gameTemplate";
     import type { PageData } from "./$types";
     import EditingSlide from "$lib/components/Game/Editing/EditingSlide.svelte";
     import { loginSession } from "$lib/stores";
@@ -31,16 +31,15 @@
 
     $: slidesNotValid = !(slideErrors.length === 0);
 
-    let noName = true;
+    let noName = false;
 
-    
     let showSubmit = false;
     
     let awaitingResponse = false;
 
     $: disableSubmit = noName || (slideErrors.length!==0) || awaitingResponse;
     
-    const localValidateTemplate = (template: GameTemplate): boolean => {
+    const localValidateTemplate = (template: StoredGameTemplate): boolean => {
         const invalidSlides: Array<SlideError> = template.slides.reduce(slideValidate, [] as Array<SlideError>);
 
         if (invalidSlides.length!==0) {
@@ -50,7 +49,7 @@
         return true;
     }
 
-    const editTemplate = (template: GameTemplate) => {
+    const editTemplate = (template: StoredGameTemplate) => {
         if(!localValidateTemplate(template)){
             console.error("Submitted slide info was not valid.");
             return;
@@ -59,14 +58,14 @@
         showSubmit = true;
     }
 
-    const submitTemplate = async (template: GameTemplate) => {
+    const submitTemplate = async (template: StoredGameTemplate) => {
         if (template.name === "") {
             noName = true;
             return;
         }
         try {
             awaitingResponse = true;
-            const res = await fetch("/game-template", {
+            const res = await fetch(`/game-template/${template._id}`, {
                 method: "PUT",
                 body: JSON.stringify(template),
                 headers: {
@@ -78,8 +77,8 @@
                 goto('/collection');
             }
             const body = await res.json();
-        } catch (error) {
-
+        } catch (err) {
+            
         }
     }
 

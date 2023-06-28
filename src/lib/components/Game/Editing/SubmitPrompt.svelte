@@ -24,7 +24,7 @@
 		<!-- svelte-ignore a11y-autofocus -->
 		<div class="container">
 			<button autofocus on:click={() => dialog.close()}>Close</button>
-			<button on:click={()=>{dispatch('submit');}} disabled={disableSubmit}>Create</button>
+			<button on:click={()=>{dispatch('submit');}} disabled={disableSubmit}>Save</button>
 		</div>
 	</div>
 </dialog>

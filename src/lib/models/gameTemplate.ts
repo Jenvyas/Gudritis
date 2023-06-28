@@ -17,7 +17,7 @@ export interface Slide {
 }
 
 export interface StoredGameTemplate {
-    _id?: string;
+    _id: string;
     name: string;
     tags: Array<string>;
     slides: Array<Slide>;

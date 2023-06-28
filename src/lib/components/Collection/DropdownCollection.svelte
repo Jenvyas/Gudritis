@@ -5,6 +5,15 @@
 
     let show: boolean = false;
 
+    let dropdownDisabled = false;
+
+    let dropdownToggle: HTMLElement;
+
+    const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }: { relatedTarget: any, currentTarget: any }) => {
+    if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return
+        show = false;
+    }
+
     const changeTemplatePublic = async () => {
         const newTemplate: StoredGameTemplate = {...template, public: !template.public };
         try {
@@ -25,16 +34,20 @@
             console.error(error);
         }
     }
-
     const deleteTemplate = async () => {
+        
     }
+
 </script>
 
-<div>
-    <button type="button" class="dropdown-button" on:click={()=>{show=!show}}>
+<div on:focusout={handleDropdownFocusLoss}>
+    <button type="button" class="dropdown-button" bind:this={dropdownToggle} on:click={()=>{
+        show = !show;
+        }} disabled={dropdownDisabled}>
         <i class="mi mi-options-horizontal"><span class="u-sr-only">Go left slide</span></i>
     </button>
-    <div class="dropdown-menu" class:shown={show}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div class="dropdown-menu" style:visibility={show ? 'visible' : 'hidden'}>
         <a class="dropdown-item" href="/edit/{template._id}">Edit</a>
         <button class="dropdown-item" on:click={changeTemplatePublic}>{template.public ? "Make private" : "Make public"}</button>
         <button class="dropdown-item" on:click={deleteTemplate}>Delete</button>
@@ -46,22 +59,33 @@
         color: var(--slide-darker-text);
         background-color: transparent;
         border: none;
-        
     }
     .dropdown-button:hover {
         cursor: pointer;
         color: var(--slide-text);
     }
     .dropdown-menu {
-        display:none;
-        position:absolute;
+        display:block;
+        position: absolute;
         z-index: 1;
-        background-color: var(--slide-answer-panel);
+        background-color: var(--slide-panel);
+        border-radius: 3px;
     }
     .dropdown-item {
-        display:block;
+        display: block;
+        text-align: left;
+        padding: 5px;
+        margin: 4px;
+        font-size: 0.9rem;
+        font-family: 'Ubuntu';
+        font-weight: 200;
+        color:white;
+        background-color: var(--slide-panel);
+        border: none;
+        text-decoration: none;
     }
-    .shown {
-        display:block;
+    .dropdown-item:hover {
+        cursor:default;
+        background-color: var(--slide-answer-panel);
     }
 </style>

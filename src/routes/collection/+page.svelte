@@ -1,5 +1,5 @@
 <script lang="ts">
-    import DropdownOptions from "$lib/components/Collection/DropdownOptions.svelte";
+    import DropdownCollection from "$lib/components/Collection/DropdownCollection.svelte";
 import type { PageData } from "./$types";
 
     export let data: PageData;
@@ -26,7 +26,7 @@ import type { PageData } from "./$types";
                             <div aria-colindex={2} class="template-name">{template.name}</div>
                             <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
                             <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
-                            <div aria-colindex={5} class="template-options"><DropdownOptions bind:template></DropdownOptions></div>
+                            <div aria-colindex={5} class="template-options"><DropdownCollection bind:template></DropdownCollection></div>
                         </div>
                     {/each}
                 </div>
