@@ -80,7 +80,7 @@
         <button class="dropdown-item" on:click={()=>{hostTemplate(template._id)}}>Host</button>
         <button class="dropdown-item" on:click={saveToCollection} disabled={template.author_id===user?._id}>Save to collection</button>
         {#if user.role==="admin"}
-        <button class="dropdown-item" on:click={flagTemplate}>{template.flagged ? "Flag" : "Unflag"}</button>
+        <button class="dropdown-item" on:click={flagTemplate}>{template.flagged ? "Unflag" : "Flag"}</button>
         <button class="dropdown-item" on:click={()=>{deleteTemplate(template._id)}}>Delete</button>
         {/if}
     </div>
