@@ -33,13 +33,13 @@
                 </div>
                 
                 <div class="template-list">
-                    {#each templates as template, i}
+                    {#each templates as template, i (template._id)}
                         <div class="template-row" aria-rowindex={i+2}>
                             <div aria-colindex={1} class="template-number">{i+1}</div>
                             <div aria-colindex={2} class="template-name">{template.name}</div>
                             <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
                             <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
-                            <DropdownSearch bind:template></DropdownSearch>
+                            <DropdownSearch bind:template on:templateDeleted={()=>{templates = templates?.filter(t=>t._id!==template._id)}}/>
                         </div>
                     {/each}
                 </div>
@@ -62,13 +62,13 @@
                 </div>
                 
                 <div class="template-list">
-                    {#each templates as template, i}
+                    {#each templates as template, i (template._id)}
                         <div class="template-row" aria-rowindex={i+2}>
                             <div aria-colindex={1} class="template-number">{i+1}</div>
                             <div aria-colindex={2} class="template-name">{template.name}</div>
                             <div aria-colindex={3} class="template-slide-length">{template.slides.length}</div>
                             <div aria-colindex={4} class="template-created-date">{`${template.created.getDate()}/${template.created.getMonth()}/${template.created.getFullYear()}`}</div>
-                            <DropdownSearch bind:template></DropdownSearch>
+                            <DropdownSearch bind:template on:templateDeleted={()=>{templates = templates?.filter(t=>t._id!==template._id)}}/>
                         </div>
                     {/each}
                 </div>

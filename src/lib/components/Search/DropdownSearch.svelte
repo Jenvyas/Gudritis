@@ -4,7 +4,10 @@
     import { loginSession } from "$lib/stores";
     import { deleteTemplate, hostTemplate } from "$lib/utils/templateUtils";
     import { error } from "@sveltejs/kit";
+    import { createEventDispatcher } from "svelte";
     import { get } from "svelte/store";
+    
+    let dispatch = createEventDispatcher();
 
     const user: LoginSession = get(loginSession);
 
@@ -37,6 +40,7 @@
             });
             const fromEndpoint = await res.json();
             if (res.status === 200) {
+                console.log(fromEndpoint);
                 template = newTemplate;
             } else {
                 throw new Error(fromEndpoint.message);
@@ -81,7 +85,14 @@
         <button class="dropdown-item" on:click={saveToCollection} disabled={template.author_id===user?._id}>Save to collection</button>
         {#if user.role==="admin"}
         <button class="dropdown-item" on:click={flagTemplate}>{template.flagged ? "Unflag" : "Flag"}</button>
-        <button class="dropdown-item" on:click={()=>{deleteTemplate(template._id)}}>Delete</button>
+        <button class="dropdown-item" on:click={async ()=>{
+            try {
+                await deleteTemplate(template._id);
+                dispatch("templateDeleted");
+            } catch (error) {
+                console.error(error);
+            }
+        }}>Delete</button>
         {/if}
     </div>
 </div>

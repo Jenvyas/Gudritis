@@ -100,6 +100,25 @@ export const PUT: RequestHandler = async (event) => {
         throw error(401, "No template found");
     }
 
+    if (session.role === "admin") {
+        try {
+            await gameTemplates?.findOneAndUpdate({_id: gameId},{
+                $set:{
+                    name: newTemplate.name,
+                    flagged: newTemplate.flagged,
+                    tags: newTemplate.tags,
+                    slides: newTemplate.slides,
+                    public: newTemplate.public,
+                    last_updated: new Date(),
+                }
+            });
+            return json("Template successfully updated");
+        } catch (err) {
+            console.error(err);
+            throw error(503, "There was a problem while contacting the database");
+        }
+    }
+
     if (newTemplate.author_id === "" || !newTemplate.author_id) {
         throw error(401, "No user provided");
     }
@@ -108,7 +127,6 @@ export const PUT: RequestHandler = async (event) => {
         throw error(401, "Template author does not match user session");
     }
 
-    
     const validationResult = validateTemplate(newTemplate);
     
     if (validationResult.statusCode !== 200) {
@@ -175,8 +193,6 @@ export const POST: RequestHandler = async (event) => {
     let createdTemplateId = uuidv4();
 
     try {
-        console.log(template);
-        
         await gameTemplates?.insertOne(
             {
                 ...template,
@@ -203,7 +219,42 @@ export const POST: RequestHandler = async (event) => {
 }
 
 export const DELETE: RequestHandler = async (event) => {
-    return json({},{});
+    const session = event.locals.loginSession;
+
+    const templateId = event.params.gameId;
+
+    if (!session) {
+        throw error(401, "Not authorized");
+    }
+
+    if (session.role === "admin") {
+        try {
+            let del = await gameTemplates?.findOneAndDelete({_id: templateId});
+            if (!del) {
+                throw error(204, "No template found");
+            }
+            return json("Template successfully deleted");
+        } catch (err) {
+            console.error(err);
+            throw error(503, "There was a problem while contacting the database");
+        }
+    }
+    
+    try {
+        const template = await gameTemplates?.findOne({_id: templateId});
+        if (!template) {
+            throw error(204, "No template found");
+        }
+        if (template.author_id !== session._id) {
+            throw error(401, "Not authorized");
+        }
+        await gameTemplates?.deleteOne({_id: templateId});
+    } catch (err) {
+        console.error(err);
+        throw error(503, "There was a problem while contacting the database");
+    }
+
+    return json("Template successfully deleted");
 }
 
 const validateTemplate = (template: GameTemplate): ValidationResult => {

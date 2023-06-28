@@ -1,5 +1,9 @@
 <script lang="ts">
     import type { StoredGameTemplate } from "$lib/models/gameTemplate";
+    import { deleteTemplate } from "$lib/utils/templateUtils";
+    import { createEventDispatcher } from "svelte";
+
+    let dispatch = createEventDispatcher();
 
     export let template: StoredGameTemplate;
 
@@ -34,10 +38,6 @@
             console.error(error);
         }
     }
-    const deleteTemplate = async () => {
-        
-    }
-
 </script>
 
 <div on:focusout={handleDropdownFocusLoss}>
@@ -50,7 +50,14 @@
     <div class="dropdown-menu" style:visibility={show ? 'visible' : 'hidden'}>
         <a class="dropdown-item" href="/edit/{template._id}">Edit</a>
         <button class="dropdown-item" on:click={changeTemplatePublic}>{template.public ? "Make private" : "Make public"}</button>
-        <button class="dropdown-item" on:click={deleteTemplate}>Delete</button>
+        <button class="dropdown-item" on:click={async ()=>{
+            try {
+                await deleteTemplate(template._id);
+                dispatch("templateDeleted");
+            } catch (error) {
+                console.error(error);
+            }
+        }}>Delete</button>
     </div>
 </div>
 
