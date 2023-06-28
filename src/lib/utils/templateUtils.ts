@@ -1,5 +1,11 @@
-export const hostTemplate = async (templateId: string) => {
+import { goto } from "$app/navigation";
 
+export const hostTemplate = async (templateId: string) => {
+    try {
+        goto(`/host/${templateId}`);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export const deleteTemplate = async (templateId: string) => {
