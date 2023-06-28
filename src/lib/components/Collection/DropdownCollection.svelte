@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { StoredGameTemplate } from "$lib/models/gameTemplate";
-    import { deleteTemplate } from "$lib/utils/templateUtils";
+    import { deleteTemplate, hostTemplate } from "$lib/utils/templateUtils";
     import { createEventDispatcher } from "svelte";
 
     let dispatch = createEventDispatcher();
@@ -10,8 +10,6 @@
     let show: boolean = false;
 
     let dropdownDisabled = false;
-
-    let dropdownToggle: HTMLElement;
 
     const handleDropdownFocusLoss = ({ relatedTarget, currentTarget }: { relatedTarget: any, currentTarget: any }) => {
     if (relatedTarget instanceof HTMLElement && currentTarget.contains(relatedTarget)) return
@@ -41,7 +39,7 @@
 </script>
 
 <div on:focusout={handleDropdownFocusLoss}>
-    <button type="button" class="dropdown-button" bind:this={dropdownToggle} on:click={()=>{
+    <button type="button" class="dropdown-button" on:click={()=>{
         show = !show;
         }} disabled={dropdownDisabled}>
         <i class="mi mi-options-horizontal"><span class="u-sr-only">Go left slide</span></i>
@@ -49,6 +47,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="dropdown-menu" style:visibility={show ? 'visible' : 'hidden'}>
         <a class="dropdown-item" href="/edit/{template._id}">Edit</a>
+        <button class="dropdown-item" on:click={()=>{hostTemplate(template._id)}}></button>
         <button class="dropdown-item" on:click={changeTemplatePublic}>{template.public ? "Make private" : "Make public"}</button>
         <button class="dropdown-item" on:click={async ()=>{
             try {
