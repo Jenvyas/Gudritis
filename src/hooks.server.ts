@@ -1,11 +1,13 @@
-import { DB_CONN_STRING, DB_NAME, GAMETEMPLATES_COLLECTION_NAME, USERS_COLLECTION_NAME, SESSIONS_COLLECTION_NAME } from "$env/static/private";
+import { DB_CONN_STRING, DB_NAME, GAMETEMPLATES_COLLECTION_NAME, USERS_COLLECTION_NAME, SESSIONS_COLLECTION_NAME, GAMESESSIONS_COLLECTION_NAME } from "$env/static/private";
 import type { GameTemplate, StoredGameTemplate } from "./lib/models/gameTemplate";
 import type { User } from './lib/models/user';
 import type { Session } from './lib/models/session';
 import * as mongoDB from "mongodb";
 import type { Handle, RequestEvent } from '@sveltejs/kit';
+import type { ActiveGameSession, GameSession } from "$lib/models/gameSession";
+import { Server } from "socket.io";
 
-export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session> } = {}
+export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session>, gameSessions?: mongoDB.Collection<GameSession> } = {}
 
 export async function connectToDatabase() {
     const client: mongoDB.MongoClient = new mongoDB.MongoClient(DB_CONN_STRING);
@@ -20,13 +22,17 @@ export async function connectToDatabase() {
 
     const sessionsCollection: mongoDB.Collection<Session> = db.collection(SESSIONS_COLLECTION_NAME);
 
+    const gameSessionsCollection: mongoDB.Collection<GameSession> = db.collection(GAMESESSIONS_COLLECTION_NAME);
+
     collections.gameTemplates = gameTemplatesCollection;
 
     collections.users = usersCollection;
 
     collections.sessions = sessionsCollection;
 
-    console.log(`Successfully connected to database: ${db.databaseName} and collections: ${gameTemplatesCollection.collectionName}, ${usersCollection.collectionName}`);
+    collections.gameSessions = gameSessionsCollection;
+
+    console.log(`Successfully connected to database: ${db.databaseName} and collections: ${gameTemplatesCollection.collectionName}, ${usersCollection.collectionName}, ${sessionsCollection.collectionName}, ${gameSessionsCollection.collectionName}`);
 
     return db;
 }
@@ -61,3 +67,6 @@ export const handle: Handle = async ({event, resolve}) => {
 
     return response;
 }
+
+export const activeGameSessions: Array<ActiveGameSession> = [];
+

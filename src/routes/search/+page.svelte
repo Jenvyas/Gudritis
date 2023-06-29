@@ -4,7 +4,6 @@
     import { get } from "svelte/store";
     import type { PageData } from "./$types";
     import { loginSession } from "$lib/stores";
-    import type { GameTemplate, StoredGameTemplate } from "$lib/models/gameTemplate";
     import { error } from "@sveltejs/kit";
 
     const user: LoginSession = get(loginSession);

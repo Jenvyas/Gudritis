@@ -47,7 +47,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div class="dropdown-menu" style:visibility={show ? 'visible' : 'hidden'}>
         <a class="dropdown-item" href="/edit/{template._id}">Edit</a>
-        <button class="dropdown-item" on:click={()=>{hostTemplate(template._id)}}></button>
+        <button class="dropdown-item" on:click={()=>{hostTemplate(template._id)}}>Host</button>
         <button class="dropdown-item" on:click={changeTemplatePublic}>{template.public ? "Make private" : "Make public"}</button>
         <button class="dropdown-item" on:click={async ()=>{
             try {
