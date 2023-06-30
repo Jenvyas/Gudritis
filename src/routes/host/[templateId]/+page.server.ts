@@ -75,7 +75,5 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
     activeGameSessions.push(gameSession);
 
-    return{gameId: gameSession._id, gameTemplate: template, code: gameSession.code};
-
-    //throw redirect(302,`/${code}`);
+    return{gameId: gameSession._id, code: gameSession.code};
 }

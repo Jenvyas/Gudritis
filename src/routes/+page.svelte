@@ -1,13 +1,10 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import type { ActionData } from "./$types";
 
     let code: number = 0;
 
-    $: console.log(code);
-
-    const goToGame = async () =>{
-        await goto(`/bob`);
-    }
+    export let form: ActionData;
 </script>
 <style>
     h1 {
@@ -21,13 +18,21 @@
         margin-bottom: 4rem;
         width:100%;
     }
+    .incorrect-input {
+        text-align: center;
+        color: var(--error);
+    }
 </style>
 
 <div class="game-join">
     <h1>Gudritis</h1>
-    <form>
-            <input type="number" bind:value={code}>
-            <button on:click={goToGame}>Join</button>
-            <button>Spectate</button>
+    <form method="POST" action="?/joinGame">
+            {#if form?.noGame}
+            <div class="incorrect-input">No game found</div>
+            {/if}
+            <input type="number" name="code" bind:value={code}>
+            <button type="submit">Join</button>
+            <button disabled={true}>Spectate</button>
     </form>
+    
 </div>

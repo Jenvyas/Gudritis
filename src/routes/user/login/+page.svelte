@@ -54,31 +54,75 @@
         } catch (err) {
             if (err instanceof Error) {
                 console.error("Login error", err);
+                message = err.message;
             }
         }
     }
 </script>
+<div class="container">
+    <div class="wrapper">
+    <form id="signIn" autocomplete="on" novalidate>
+        <h3>Sign in</h3>
+        <div class="credentials-wrapper">
+            <input
+            type="text"
+            bind:value={credentials.name}
+            autocomplete="username"
+            placeholder="Email/username"
+            required
+            />
+            <input
+                type="password"
+                bind:value={credentials.password}
+                minlength="8"
+                maxlength="32"
+                placeholder="password"
+                required
+            />
+        </div>
+        {#if message}
+            <p>{message}</p>
+        {/if}
+        <div class="input-wrapper">
+            <a href="/user/register">register</a>
+            <button on:click|preventDefault={login}>Sign In</button>
+        </div>
+    </form>
+    </div>
+</div>
 
-<form id="signIn" autocomplete="on" novalidate>
-    <h4>Sign in</h4>
-    <input
-        type="text"
-        bind:value={credentials.name}
-        autocomplete="username"
-        placeholder="Email/username"
-        required
-    />
-    <input
-        type="password"
-        bind:value={credentials.password}
-        minlength="8"
-        maxlength="32"
-        placeholder="password"
-        required
-    />
-    {#if message}
-        <p>{message}</p>
-    {/if}
-    <button on:click|preventDefault={login}>Sign In</button>
-</form>
-<a href="/user/register">register</a>
+<style>
+    .container {
+        width:100%;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wrapper {
+        padding:1%;
+        background-color: var(--slide-panel);
+        border-radius: 3px;
+        border: solid 1px;
+        border-color: var(--slide-text);
+    }
+    .credentials-wrapper {
+        display:flex;
+        flex-direction: column;
+    }
+    .input-wrapper {
+        width:100%;
+        display:flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    h3 {
+        text-align: center;
+        color: var(--slide-text);
+    }
+    a {
+        color: var(--slide-text);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+</style>
+

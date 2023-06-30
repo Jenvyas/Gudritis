@@ -5,7 +5,6 @@ import type { Session } from './lib/models/session';
 import * as mongoDB from "mongodb";
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import type { ActiveGameSession, GameSession } from "$lib/models/gameSession";
-import { Server } from "socket.io";
 
 export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session>, gameSessions?: mongoDB.Collection<GameSession> } = {}
 

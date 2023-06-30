@@ -159,7 +159,7 @@
         {/if}
     </article>
     
-
+    
     <button class="slide-change-button" disabled={activeSlideIndex >= template.slides.length || (template.slides.length === 0)} on:click={e=>{
             activeSlideIndex++;
         }}>

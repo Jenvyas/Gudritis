@@ -76,48 +76,89 @@
     }
 </script>
 
-<form id="register" autocomplete="on" novalidate>
-    <h4>Sign in</h4>
-    <input
-        type="text"
-        bind:value={user.username}
-        autocomplete="username"
-        placeholder="username"
-        required
-    />
-    <input
-        type="text"
-        bind:value={user.email}
-        autocomplete="email"
-        placeholder="email"
-        required
-    />
-    <input
-    type="text"
-    bind:value={user.nickname}
-    placeholder="nickname"
-    required
-    />
-    <input
-        type="password"
-        bind:value={user.password}
-        minlength="8"
-        maxlength="32"
-        autocomplete="new-password"
-        placeholder="password"
-        required
-    />
-    <input
-        type="password"
-        bind:this={confirmPassword}
-        minlength="8"
-        maxlength="32"
-        autocomplete="new-password"
-        placeholder="confirm password"
-        required
-    />
-    {#if message}
-        <p>{message}</p>
-    {/if}
-    <button on:click|preventDefault={register}>Register</button>
-</form>
+<div class="container">
+    <div class="wrapper">
+        <form id="register" autocomplete="on" novalidate>
+            <h3>Sign in</h3>
+                <div class="credentials-wrapper">
+                    <input
+                    type="text"
+                    bind:value={user.username}
+                    autocomplete="username"
+                    placeholder="username"
+                    required
+                />
+                <input
+                    type="text"
+                    bind:value={user.email}
+                    autocomplete="email"
+                    placeholder="email"
+                    required
+                />
+                <input
+                type="text"
+                bind:value={user.nickname}
+                placeholder="nickname"
+                required
+                />
+                <input
+                    type="password"
+                    bind:value={user.password}
+                    minlength="8"
+                    maxlength="32"
+                    autocomplete="new-password"
+                    placeholder="password"
+                    required
+                />
+                <input
+                    type="password"
+                    bind:this={confirmPassword}
+                    minlength="8"
+                    maxlength="32"
+                    autocomplete="new-password"
+                    placeholder="confirm password"
+                    required
+                />
+            </div>
+            {#if message}
+                <p>{message}</p>
+            {/if}
+            <div class="input-wrapper">
+                <button on:click|preventDefault={register}>Register</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .container {
+        width:100%;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wrapper {
+        padding:1%;
+        background-color: var(--slide-panel);
+        border-radius: 3px;
+        border: solid 1px;
+        border-color: var(--slide-text);
+    }
+    .credentials-wrapper {
+        display:flex;
+        flex-direction: column;
+    }
+    .credentials-wrapper input {
+        margin-bottom: 5px;
+    }
+    .input-wrapper {
+        width:100%;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+    }
+    h3 {
+        text-align: center;
+        color: var(--slide-text);
+    }
+</style>
