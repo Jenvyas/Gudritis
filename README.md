@@ -24,3 +24,5 @@ You can preview the production build with `npm run preview`.
 ## Backend
 
 Currently the backend is in another [repository](https://github.com/Jenvyas/gudritis-websocket), it is planned to merge them once it is functional 
+
+## STIL WIP
