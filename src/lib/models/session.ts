@@ -1,14 +1,3 @@
-import { collections } from "../../hooks.server";
-
-export const sessions = collections.sessions;
-
-export interface Session{
-    _id: string;
-    userId: string;
-    creationDate: Date;
-    expirationDate: Date;
-}
-
 interface LoginSessionData{
     _id: string;
     username: string;

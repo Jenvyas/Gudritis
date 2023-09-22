@@ -1,5 +1,6 @@
-import { DB_CONN_STRING, DB_NAME, GAMETEMPLATES_COLLECTION_NAME, USERS_COLLECTION_NAME, SESSIONS_COLLECTION_NAME, GAMESESSIONS_COLLECTION_NAME } from "$env/static/private";
+import { REDIS_CONN_STRING, DB_CONN_STRING, DB_NAME, WS_CONN_STRING, GAMETEMPLATES_COLLECTION_NAME, USERS_COLLECTION_NAME, SESSIONS_COLLECTION_NAME, GAMESESSIONS_COLLECTION_NAME } from "$env/static/private";
 import type { GameTemplate, StoredGameTemplate } from "./lib/models/gameTemplate";
+import { createClient } from "redis";
 import type { User } from './lib/models/user';
 import type { Session } from './lib/models/session';
 import * as mongoDB from "mongodb";
@@ -36,21 +37,35 @@ export async function connectToDatabase() {
     return db;
 }
 
+async function connectToRedis() {
+    const client = await createClient({
+        url: REDIS_CONN_STRING
+    }).
+        on('error', err => console.log('Redis client error', err))
+        .connect();
+    return client;
+}
+
 export const db = await connectToDatabase();
 
+export const redis_client = await connectToRedis();
+
 async function attachUserToRequestEvent(sessionId: string, event: RequestEvent) {
-    const session = await collections.sessions?.findOne({_id: sessionId});
-    
-    if (session) {
-        const user = await collections.users?.findOne({_id: session.userId});
-        
+    const user_id = await redis_client.get(sessionId);
+    const expire_time = await redis_client.expireTime(sessionId);
+    const expirationDate = new Date();
+    expirationDate.setSeconds(expirationDate.getSeconds()+expire_time);
+
+    if (user_id) {
+        const user = await collections.users?.findOne({ _id: user_id });
+
         if (user) {
-            event.locals.loginSession = {...user, sessionExpiration: session.expirationDate};
+            event.locals.loginSession = { ...user, sessionExpiration: expirationDate};
         }
     }
 }
 
-export const handle: Handle = async ({event, resolve}) => {
+export const handle: Handle = async ({ event, resolve }) => {
     const { cookies } = event;
     const sessionId = cookies.get('session');
 

@@ -3,16 +3,16 @@ import * as EmailValidator from 'email-validator';
 import { v4 as uuidv4 } from 'uuid';
 import { users } from "$lib/models/user";
 import type { User } from "$lib/models/user";
-import { sessions, type Session } from "$lib/models/session";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";
 import type { WithId } from "mongodb";
+import { redis_client } from "../../../hooks.server";
 
 interface AuthenticationResult {
     statusCode: number,
     message: string,
     user: User | undefined | null,
-    session: Session | undefined | null
+    session: [String, Date] | undefined | null
 }
 
 const authenticateLogin = async (requestBody: any): Promise<AuthenticationResult> => {
@@ -142,19 +142,13 @@ const authenticateRegister = async (requestBody: any): Promise<AuthenticationRes
     return authenticationResult;
 }
 
-const createNewSession = async (user: User): Promise<Session> => {
-    await sessions?.deleteMany({userId: user._id});
-    
+const createNewSession = async (user: User): Promise<[String, Date]> => {
     const expirationDate = new Date();
     expirationDate.setHours(new Date().getHours() + 2);
-    let newSession: Session = {
-        _id: uuidv4(),
-        userId: user._id,
-        creationDate: new Date(),
-        expirationDate: expirationDate,
-    }
-    await sessions?.insertOne(newSession);
-    return newSession;
+    const session_id = uuidv4();
+    await redis_client.set(session_id, user._id);
+    await redis_client.expire(session_id, 60*60*2);
+    return [session_id, expirationDate];
 }
 
 export const POST: RequestHandler = async (event) => {
@@ -177,7 +171,8 @@ export const POST: RequestHandler = async (event) => {
                 break;
             case 'logout':
                 if (event.locals.loginSession) {
-                    await sessions?.deleteMany({ userId: event.locals.loginSession._id });
+                    let session_id = event.cookies.get('session')
+                    if (session_id) await redis_client.del(session_id);
                 }
                 return json({ message: 'Logout successful.' }, {
 					headers: {
@@ -199,7 +194,7 @@ export const POST: RequestHandler = async (event) => {
 
     event.locals.loginSession = {
         ...authenticationResult.user,
-        sessionExpiration: authenticationResult.session.expirationDate
+        sessionExpiration: authenticationResult.session[1]
     };
 
     return json(
@@ -209,7 +204,7 @@ export const POST: RequestHandler = async (event) => {
         },
         {
             headers: {
-                'Set-Cookie': `session=${authenticationResult.session?._id}; Path=/; SameSite=Lax; HttpOnly; Max-Age=7200`
+                'Set-Cookie': `session=${authenticationResult.session?.[0]}; Path=/; SameSite=Lax; HttpOnly; Max-Age=7200`
             }
         }
     );
