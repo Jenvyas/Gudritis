@@ -51,8 +51,8 @@
 <script lang="ts">
     export let text: string;
     export let index: number;
-    export let correctAnswer: Array<number>;
-    $: isChecked = correctAnswer.includes(index);
+    export let correct_answer: Array<number>;
+    $: isChecked = correct_answer.includes(index);
 </script>
 
 <div class:correct={isChecked} class="answer">

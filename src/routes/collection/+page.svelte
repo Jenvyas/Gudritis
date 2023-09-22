@@ -14,7 +14,7 @@
             {
                 duration: 10,
                 text: "",
-                isMultipleAnswer: false,
+                is_multiple_answer: false,
                 answers: [
                     {
                         index: 0,
@@ -25,7 +25,7 @@
                         text: "",
                     },
                 ],
-                correctAnswer: [0],
+                correct_answer: [0],
             },
         ],
         author: "bob",

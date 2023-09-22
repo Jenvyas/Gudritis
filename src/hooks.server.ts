@@ -2,14 +2,24 @@ import { REDIS_CONN_STRING, DB_CONN_STRING, DB_NAME, WS_CONN_STRING, GAMETEMPLAT
 import type { GameTemplate, StoredGameTemplate } from "./lib/models/gameTemplate";
 import { createClient } from "redis";
 import type { User } from './lib/models/user';
-import type { Session } from './lib/models/session';
 import * as mongoDB from "mongodb";
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import type { ActiveGameSession, GameSession } from "$lib/models/gameSession";
+import WebSocket from 'ws';
+export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, gameSessions?: mongoDB.Collection<GameSession> } = {}
 
-export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, sessions?: mongoDB.Collection<Session>, gameSessions?: mongoDB.Collection<GameSession> } = {}
+async function connectToWebsocketServer() {
+    const socket = new WebSocket(WS_CONN_STRING);
 
-export async function connectToDatabase() {
+    socket.on('error', (err) =>{
+        console.log(`Websocket client error ${err}`);
+        socket.close();
+    })
+
+    return socket;
+}
+
+async function connectToDatabase() {
     const client: mongoDB.MongoClient = new mongoDB.MongoClient(DB_CONN_STRING);
 
     await client.connect();
@@ -20,19 +30,17 @@ export async function connectToDatabase() {
 
     const usersCollection: mongoDB.Collection<User> = db.collection(USERS_COLLECTION_NAME);
 
-    const sessionsCollection: mongoDB.Collection<Session> = db.collection(SESSIONS_COLLECTION_NAME);
-
     const gameSessionsCollection: mongoDB.Collection<GameSession> = db.collection(GAMESESSIONS_COLLECTION_NAME);
 
     collections.gameTemplates = gameTemplatesCollection;
 
     collections.users = usersCollection;
 
-    collections.sessions = sessionsCollection;
-
     collections.gameSessions = gameSessionsCollection;
 
-    console.log(`Successfully connected to database: ${db.databaseName} and collections: ${gameTemplatesCollection.collectionName}, ${usersCollection.collectionName}, ${sessionsCollection.collectionName}, ${gameSessionsCollection.collectionName}`);
+    console.log(`Successfully connected to database: ${db.databaseName} and collections: ${gameTemplatesCollection.collectionName},
+    ${usersCollection.collectionName}, 
+    ${gameSessionsCollection.collectionName}`);
 
     return db;
 }
@@ -47,6 +55,8 @@ async function connectToRedis() {
 }
 
 export const db = await connectToDatabase();
+
+export const socket = await connectToWebsocketServer();
 
 export const redis_client = await connectToRedis();
 

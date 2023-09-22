@@ -25,7 +25,7 @@
             {
                 duration: 10,
                 text: "",
-                isMultipleAnswer: false,
+                is_multiple_answer: false,
                 answers: [
                     {
                         index: 0,
@@ -36,7 +36,7 @@
                         text: "",
                     },
                 ],
-                correctAnswer: [0],
+                correct_answer: [0],
             },
         ],
         author: user.nickname,
@@ -174,14 +174,14 @@
                 type="checkbox"
                 on:input={(e)=>{
                     if(!e.currentTarget.checked) {
-                        if(template.slides[activeSlideIndex].correctAnswer.length > 0) {
-                            let lastIndex = template.slides[activeSlideIndex].correctAnswer.length-1;
-                            template.slides[activeSlideIndex].correctAnswer = [template.slides[activeSlideIndex].correctAnswer[lastIndex]];
+                        if(template.slides[activeSlideIndex].correct_answer.length > 0) {
+                            let lastIndex = template.slides[activeSlideIndex].correct_answer.length-1;
+                            template.slides[activeSlideIndex].correct_answer = [template.slides[activeSlideIndex].correct_answer[lastIndex]];
                         }
                     }
-                    template.slides[activeSlideIndex].isMultipleAnswer=e.currentTarget.checked;
+                    template.slides[activeSlideIndex].is_multiple_answer=e.currentTarget.checked;
                 }}
-                bind:checked={template.slides[activeSlideIndex].isMultipleAnswer}
+                bind:checked={template.slides[activeSlideIndex].is_multiple_answer}
             />
         </li>
         <li>
@@ -213,7 +213,7 @@
                     <button class:current-type={template.slides[activeSlideIndex].answers.length === 2} on:click={()=>{
                         if (template.slides[activeSlideIndex].answers.length !== 2) {
                             template.slides[activeSlideIndex].answers = template.slides[activeSlideIndex].answers.splice(0, 2);
-                            template.slides[activeSlideIndex].correctAnswer = template.slides[activeSlideIndex].correctAnswer.filter(i=>{
+                            template.slides[activeSlideIndex].correct_answer = template.slides[activeSlideIndex].correct_answer.filter(i=>{
                                 return i<3;
                             })
                             slideErrors = slideErrors.filter(e=>e.index!==activeSlideIndex);

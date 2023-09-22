@@ -5,7 +5,7 @@ export const gameSessions = collections.gameSessions;
 
 export interface Player {
     registered_player: boolean;
-    player_id: string;
+    user_id: string;
     nickname: string;
 }
 

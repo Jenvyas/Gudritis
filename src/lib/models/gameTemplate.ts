@@ -11,9 +11,9 @@ export interface Slide {
     duration: number;
     text?: string;
     image?: string; 
-    isMultipleAnswer: boolean;
+    is_multiple_answer: boolean;
     answers: Array<Answer>;
-    correctAnswer: Array<number>;
+    correct_answer: Array<number>;
 }
 
 export interface StoredGameTemplate {

@@ -18,7 +18,7 @@
                 <Answer
                     index={answer.index}
                     bind:text={answer.text}
-                    bind:correctAnswer={slide.correctAnswer}
+                    bind:correct_answer={slide.correct_answer}
                 />
             </div>
             {/each}
@@ -87,3 +87,4 @@
 </style>
 
 
+correct_answer

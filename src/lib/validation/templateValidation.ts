@@ -48,11 +48,11 @@ export const slideValidate = (invSlides: Array<SlideError>, slide: Slide, index:
         }
     }
 
-    if (slide.correctAnswer.length === 0) {
+    if (slide.correct_answer.length === 0) {
         slideErrors.noCorrectAnswer = true;
     }
 
-    if (!slide.isMultipleAnswer && (slide.correctAnswer.length > 1)) {
+    if (!slide.is_multiple_answer && (slide.correct_answer.length > 1)) {
         slideErrors.multipleCorrectOnSingleAnswer = true;
     }
 
@@ -64,8 +64,8 @@ export const slideValidate = (invSlides: Array<SlideError>, slide: Slide, index:
         slideErrors.durationTooShort = true;
     }
 
-    for (let i = 0; i < slide.correctAnswer.length; i++) {
-        if ( slide.correctAnswer[i] >= slide.answers.length || slide.correctAnswer[i] < 0 ) {
+    for (let i = 0; i < slide.correct_answer.length; i++) {
+        if ( slide.correct_answer[i] >= slide.answers.length || slide.correct_answer[i] < 0 ) {
             slideErrors.correctAnswerOutOfBounds = true;
             break;
         }

@@ -3,6 +3,8 @@ import type { PageServerLoad } from './$types';
 import { redirect, type Actions } from '@sveltejs/kit';
 import { v4 as uuidv4 } from 'uuid';
 
+export const ssr = false;
+
 export const load = (async ({locals, params, cookies}) => {
     const {loginSession} = locals;
 
@@ -15,8 +17,6 @@ export const load = (async ({locals, params, cookies}) => {
     if (gameIndex===-1) {
         throw redirect(307, `/`);
     }
-
-    const gameSessionId = activeGameSessions[gameIndex]._id;
 
     const isHost = activeGameSessions[gameIndex].host===loginSession?._id;
 
@@ -31,5 +31,5 @@ export const load = (async ({locals, params, cookies}) => {
         }
     }
 
-    return { gameSessionId, isHost, SessionId };
+    return { gameId, isHost, SessionId };
 }) satisfies PageServerLoad;

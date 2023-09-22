@@ -3,12 +3,11 @@ import { gameTemplates, type StoredGameTemplate } from "$lib/models/gameTemplate
 import { error, redirect } from "@sveltejs/kit";
 import { gameSessions, type ActiveGameSession } from "$lib/models/gameSession";
 import { v4 as uuidv4 } from 'uuid';
-import { activeGameSessions } from "../../../hooks.server";
+import { activeGameSessions, socket } from "../../../hooks.server";
 import { goto } from "$app/navigation";
-import { io } from "socket.io-client";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-    const {loginSession} = locals;
+    const { loginSession } = locals;
 
     if (!loginSession) {
         throw redirect(302, '/user/login');
@@ -19,7 +18,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     let template: StoredGameTemplate | null | undefined;
 
     try {
-        template = await gameTemplates?.findOne({_id: templateId});
+        template = await gameTemplates?.findOne({ _id: templateId });
     } catch (err) {
         console.log(err);
         throw error(503, "Could not contact the database");
@@ -39,21 +38,21 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         var minm = 10000;
         var maxm = 99999;
         return Math.floor(Math
-        .random() * (maxm - minm + 1)) + minm;
+            .random() * (maxm - minm + 1)) + minm;
     }
 
-    let code: number=11111;
+    let code: number = 11111;
     let findingCode = true;
 
     while (findingCode) {
         code = randomCode();
-        let index = activeGameSessions.findIndex(i=>i.code===code);
-        if (index===-1) {
-            findingCode=false;
+        let index = activeGameSessions.findIndex(i => i.code === code);
+        if (index === -1) {
+            findingCode = false;
             break;
         }
     }
-    
+
     let gameSession: ActiveGameSession = {
         _id: uuidv4(),
         code,
@@ -70,10 +69,17 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     try {
         await gameSessions?.insertOne(gameSession);
     } catch (err) {
-        throw error(503,"Couldn't contact the database");
+        throw error(503, "Couldn't contact the database");
     }
 
     activeGameSessions.push(gameSession);
+    let sessionMessage = {
+        "method": "Host",
+        "session_id": gameSession._id,
+    }
+    if (socket.readyState === socket.OPEN) {
+        socket.send(JSON.stringify(sessionMessage));
+    }
 
-    return{gameId: gameSession._id, code: gameSession.code};
+    throw redirect(302, `/${code}`);
 }

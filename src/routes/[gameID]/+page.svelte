@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Socket, io } from "socket.io-client";
     import type { PageData } from "./$types";
     import { loginSession } from "$lib/stores";
     import { get } from "svelte/store";
@@ -7,7 +6,18 @@
     import type { Player } from "$lib/models/gameSession";
     import { error } from "@sveltejs/kit";
 
-    let socket = io();
+    const socket = new WebSocket("ws://localhost/socket");
+
+    let establishedConnection: boolean = false;
+
+    socket.addEventListener("open", (event) => {
+        establishedConnection = true;
+        joinLobby();
+    });
+
+    socket.addEventListener("message", (event) => {
+        console.log(event.data);
+    })
 
     export let data: PageData;
 
@@ -15,7 +25,7 @@
 
     let nickname = user?.nickname || "";
 
-    const gameSessionId = data.gameSessionId;
+    const gameSessionId = data.gameId;
 
     const SessionId = data.SessionId;
 
@@ -29,29 +39,25 @@
 
     let inLobby = false;
 
-    socket.on("accepted-player",()=>{
-        console.log("a");
-        
-        inLobby=true;
-    });
-
-    socket.on("player-joined",({players}: {players:Array<Player>})=>{
-        lobbyPlayers = players;
-    })
-
     const joinLobby = () => {
-        const player:Player = {
+        const code = gameSessionId;
+        const player: Player = {
+            user_id: user?._id || "",
+            nickname: nickname,
             registered_player: !!(user),
-            player_id: SessionId,
-            nickname: nickname
         }
-        const gameId = gameSessionId;
-        console.log({player,gameId});
+
+        let joinMessage = {
+            "method": "Join",
+            ...player,
+            "game_code": code,
+        }
         
-        socket.emit("join-game",{player,gameId});
+        socket.send(JSON.stringify(joinMessage));
     }
     
     if (isHost) {
+
     }
 
     if (user) {
@@ -79,7 +85,7 @@
         {:else}
         <div>
             <input type="text" bind:value={nickname}>
-            <button on:click={joinLobby}>Join</button>
+            <button on:click={joinLobby} disabled={!establishedConnection}>Join</button>
         </div>
         {/if}
         {/if}

@@ -26,8 +26,8 @@
                 <EditingAnswer
                     index={answer.index}
                     bind:text={answer.text}
-                    isMultipleAnswer={slide.isMultipleAnswer}
-                    bind:correctAnswer={slide.correctAnswer}
+                    isMultipleAnswer={slide.is_multiple_answer}
+                    bind:correctAnswer={slide.correct_answer}
                     on:removeAnswerError={()=>{
                         dispatch("removeAnswerError", {index: answer.index});
                     }}
