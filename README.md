@@ -20,3 +20,9 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Backend
+
+Currently the backend is in another [repository](https://github.com/Jenvyas/gudritis-websocket), it is planned to merge them once it is functional 
+
+## STIL WIP
