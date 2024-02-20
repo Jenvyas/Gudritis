@@ -5,19 +5,7 @@ import type { User } from './lib/models/user';
 import * as mongoDB from "mongodb";
 import type { Handle, RequestEvent } from '@sveltejs/kit';
 import type { ActiveGameSession, GameSession } from "$lib/models/gameSession";
-import WebSocket from 'ws';
 export const collections: { gameTemplates?: mongoDB.Collection<StoredGameTemplate>, users?: mongoDB.Collection<User>, gameSessions?: mongoDB.Collection<GameSession> } = {}
-
-async function connectToWebsocketServer() {
-    const socket = new WebSocket(WS_CONN_STRING);
-
-    socket.on('error', (err) =>{
-        console.log(`Websocket client error ${err}`);
-        socket.close();
-    })
-
-    return socket;
-}
 
 async function connectToDatabase() {
     const client: mongoDB.MongoClient = new mongoDB.MongoClient(DB_CONN_STRING);
@@ -55,8 +43,6 @@ async function connectToRedis() {
 }
 
 export const db = await connectToDatabase();
-
-export const socket = await connectToWebsocketServer();
 
 export const redis_client = await connectToRedis();
 

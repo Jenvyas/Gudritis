@@ -47,7 +47,7 @@
             const slideTemplate = {
                 duration: 10,
                 text: "",
-                isMultipleAnswer: false,
+                is_multiple_answer: false,
                 answers: [
                     {
                         index: 0,
@@ -58,7 +58,7 @@
                         text: "",
                     },
                 ],
-                correctAnswer: [0],
+                correct_answer: [0],
             }
             if (index < 0) {
                 slides = [ slideTemplate, ...slides]
@@ -76,7 +76,7 @@
             const slideTemplate = {
                 duration: 10,
                 text: "",
-                isMultipleAnswer: false,
+                is_multiple_answer: false,
                 answers: [
                     {
                         index: 0,
@@ -95,7 +95,7 @@
                         text: "",
                     },
                 ],
-                correctAnswer: [0],
+                correct_answer: [0],
             }
             if (index < 0) {
                 slides = [ slideTemplate, ...slides]

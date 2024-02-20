@@ -1,28 +1,36 @@
-## Developing
+# Gudritis
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+An online multiplayer trivia game site. 
+
+Currently the actual game part isn't functional since the backend game server isn't finished yet.
+
+## Running tests
+
+Currently there are only tests for the game server.
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+cd game_server
+cargo test
 ```
 
 ## Building
 
-To create a production version of your app:
+Building will require cargo to be installed for the game server and node, npm for the frontend.
+
+### For the game server
 
 ```bash
+cd game_server
+cargo build
+```
+
+### For the frontend
+
+```bash
+cd frontend
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Disclaimer
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Backend
-
-Currently the backend is in another [repository](https://github.com/Jenvyas/gudritis-websocket), it is planned to merge them once it is functional 
-
-## STIL WIP
+This project is very WIP. 

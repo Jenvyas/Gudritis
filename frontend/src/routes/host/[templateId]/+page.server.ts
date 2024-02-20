@@ -3,7 +3,7 @@ import { gameTemplates, type StoredGameTemplate } from "$lib/models/gameTemplate
 import { error, redirect } from "@sveltejs/kit";
 import { gameSessions, type ActiveGameSession } from "$lib/models/gameSession";
 import { v4 as uuidv4 } from 'uuid';
-import { activeGameSessions, socket } from "../../../hooks.server";
+import { activeGameSessions } from "../../../hooks.server";
 import { goto } from "$app/navigation";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -73,13 +73,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     }
 
     activeGameSessions.push(gameSession);
-    let sessionMessage = {
-        "method": "Host",
-        "session_id": gameSession._id,
-    }
-    if (socket.readyState === socket.OPEN) {
-        socket.send(JSON.stringify(sessionMessage));
-    }
+
+    await fetch(`http://127.0.0.1:80/host?id=${gameSession._id}`, {
+        method: 'POST',
+    })    
 
     throw redirect(302, `/${code}`);
 }
